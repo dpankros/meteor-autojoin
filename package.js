@@ -14,6 +14,7 @@ Package.onUse(function(api) {
   api.use('aldeed:simple-schema', ['client', 'server']);
   api.use('check', ['client', 'server']);
   api.use('mongo', ['client', 'server']);
+  api.export('AutoJoin', ['client', 'server']);
   api.versionsFrom('1.0.3.2');
   api.addFiles('meteor-autojoin.js');
 });

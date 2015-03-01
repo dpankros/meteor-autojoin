@@ -8,6 +8,15 @@ function onLoad() {
 }
 
 onLoad();
+
+
+var prefs = {
+  joinWhenSpecified: true,
+  joinDepth:1
+}
+
+
+var private = private || {};
 /**
  * Returns the expanded defintion of one property
  * @param {String} prop - the property to expand
@@ -16,7 +25,7 @@ onLoad();
  * @return {Object} The exanded property
  */
 
-function expandProp(prop, propValue, propSchema) {
+private.expandProp = function expandProp(prop, propValue, propSchema) {
   if (!prop || !propValue) {
     return propValue;
   }
@@ -39,17 +48,23 @@ function expandProp(prop, propValue, propSchema) {
  * @param {Object} docSchema - the SimpleSchema defintion for the document
  * @return {*} The expanded document
  */
-function expandDoc(doc, docSchema) {
+private.expandDoc = function expandDoc(doc, docSchema) {
   if (!doc || !docSchema) {
     return doc;
   }
   var prop;
   for (prop in doc) {
     var propSchema = docSchema.getDefinition(prop);
-    doc[prop] = expandProp(prop, doc[prop], propSchema);
+    doc[prop] = private.expandProp(prop, doc[prop], propSchema);
   }
   return doc;
 }
+
+
+AutoJoin = AutoJoin || {};
+AutoJoin.prefs = prefs;
+AutoJoin.private = private;
+
 /*
  * schema should be somethign like
 
@@ -83,13 +98,21 @@ var __origMongoCollectionFindOne = Mongo.Collection.prototype.findOne;
  */
 Mongo.Collection.prototype.findOne = function findOneWithJoin(sel, opt) {
   var self = this;
-  var result = __origMongoCollectionFindOne.apply(this, arguments);
-  var ss = this.simpleSchema();
-  if (!ss) {
-    return result;
+  var doJoin = AutoJoin.prefs.joinWhenSpecified;
+
+  if (opt && opt.hasOwnProperty('autojoin')) {
+    doJoin = opt['autojoin'];
+    delete opt['autojoin'];
   }
 
-  return expandDoc(result, ss);
+  var result = __origMongoCollectionFindOne.apply(this, arguments);
+  var ss = this.simpleSchema();
+
+  if (doJoin && ss) {
+    result = AutoJoin.private.expandDoc(result, ss);
+  }
+
+  return result;
 };
 
 
@@ -102,10 +125,19 @@ Mongo.Collection.prototype.findOne = function findOneWithJoin(sel, opt) {
  */
 Mongo.Collection.prototype.find = function findWithJoin(sel, opt) {
   var self = this;
+  var doJoin = AutoJoin.prefs.joinWhenSpecified;
+
+  if (opt && opt.hasOwnProperty('autojoin')) {
+    doJoin = opt['autojoin'];
+    delete opt['autojoin'];
+  }
+
   var result = __origMongoCollectionFind.apply(this, arguments);
 
-  //add the schema to the cursor for later access
-  result.__afSchema = this.simpleSchema();
+  if (doJoin) {
+    //add the schema to the cursor for later access, if needed
+    result.__afSchema = this.simpleSchema();
+  }
   return result;
 };
 
@@ -130,7 +162,7 @@ Mongo.Cursor.fetch = function fetchWithJoin() {
   var doc;
   for (i = 0; i < result.length; i++) {
     doc = result[i];
-    newArray.push(expandDoc(doc, this.__afSchema));
+    newArray.push(AutoJoin.private.expandDoc(doc, this.__afSchema));
   }
   return newArray;
 };
@@ -150,7 +182,7 @@ Mongo.Cursor.forEach = function forEachWithjoin(callback, opt_thisArg) {
   }
 
   var wrappedCallback = function(obj, ndx, cursor) {
-    obj = expandDoc(obj, this.__afSchema);
+    obj = AutoJoin.private.expandDoc(obj, this.__afSchema);
     return callback.apply(obj, this);
   };
   arguments[0] = wrappedCallback;
@@ -172,7 +204,7 @@ Mongo.Cursor.map = function mapWithJoin(callback, opt_thisArg) {
   }
 
   var wrappedCallback = function(obj, ndx, cursor) {
-    obj = expandDoc(obj, this.__afSchema);
+    obj = AutoJoin.private.expandDoc(obj, this.__afSchema);
     return callback.apply(obj, this);
   };
   arguments[0] = wrappedCallback;
