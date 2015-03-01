@@ -21,6 +21,6 @@ Package.onUse(function(api) {
 
 Package.onTest(function(api) {
   api.use('tinytest');
-  api.use('meteor-autojoin');
+  api.use('dpankros:autojoin');
   api.addFiles('meteor-autojoin-tests.js');
 });
