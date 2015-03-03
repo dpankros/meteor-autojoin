@@ -11,16 +11,25 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.use('aldeed:simple-schema', ['client', 'server']);
   api.use('check', ['client', 'server']);
   api.use('mongo', ['client', 'server']);
-  api.export('AutoJoin', ['client', 'server']);
+  api.use('aldeed:simple-schema@1.3.0', ['client', 'server']);
+  api.use('aldeed:collection2@2.3.2', ['client', 'server']);
   api.versionsFrom('1.0.3.2');
+
+  api.addFiles('meteor-autojoin-prefs.js');
+  api.addFiles('meteor-autojoin-private.js');
+  api.addFiles('meteor-autojoin-mongo.js');
   api.addFiles('meteor-autojoin.js');
+
+  api.export('AutoJoin', ['client', 'server']);
 });
 
 Package.onTest(function(api) {
+  api.use('mongo', ['client', 'server']);
   api.use('tinytest');
-  api.use('dpankros:autojoin');
+  api.use('aldeed:simple-schema@1.3.0', ['client', 'server']);
+  api.use('aldeed:collection2@2.3.2', ['client', 'server']);
   api.addFiles('meteor-autojoin-tests.js');
+  api.use('dpankros:autojoin');
 });
