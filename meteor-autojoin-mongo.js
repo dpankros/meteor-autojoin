@@ -2,7 +2,7 @@
  * Pointers to original functions that will be wrapped.
  * @type {Function}
  */
-var __orig = {
+__orig = {
   MongoCollectionFind: Mongo.Collection.prototype.find,
   MongoCollectionFindOne: Mongo.Collection.prototype.findOne,
   MongoCursorFetch: Mongo.Collection.Cursor.prototype.fetch,
