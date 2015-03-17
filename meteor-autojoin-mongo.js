@@ -111,19 +111,22 @@ Mongo.Collection.Cursor.prototype.fetch = function fetchWithJoin() {
  * @return {*}
  * @this external Mongo.Cursor
  */
-Mongo.Collection.Cursor.prototype.forEach =
-    function forEachWithJoin(callback, opt_thisArg) {
-      var self = this;
-      if (this.__afSchema) {
-        var wrappedCallback = function(obj, ndx, cursor) {
-          var depth = this.__ajDepth.copy();
-          obj = AutoJoin._private.expandDoc(obj, this.__afSchema, depth);
-          return callback.apply(obj, this);
-        };
-        arguments[0] = wrappedCallback;
-      }
-      return AutoJoin.__orig.MongoCursorForEach.apply(this, arguments);
-    };
+//Mongo.Collection.Cursor.prototype.forEach =
+//    function forEachWithJoin(callback, opt_thisArg) {
+//      var self = this;
+//      if (this.__afSchema) {
+//        var wrappedCallback = function(obj, ndx, cursor) {
+//          if (! this.__ajDepth) {
+//            console.log('WARNING: depth is undefined.  Defaulting to 0.');
+//          }
+//          var depth = this.__ajDepth || 0;
+//          obj = AutoJoin._private.expandDoc(obj, this.__afSchema, depth);
+//          return callback.apply(obj, this);
+//        };
+//        arguments[0] = wrappedCallback;
+//      }
+//      return AutoJoin.__orig.MongoCursorForEach.apply(this, arguments);
+//    };
 
 
 /**
@@ -134,16 +137,18 @@ Mongo.Collection.Cursor.prototype.forEach =
  * @return {Array|*} the resulting array with callback applied to each element
  * @this external Mongo.Cursor
  */
-Mongo.Collection.Cursor.prototype.map =
-    function mapWithJoin(callback, opt_thisArg) {
-      if (!this.__afSchema) {
-        return AutoJoin.__orig.MongoCursorMap(this, arguments);
-      }
-      var wrappedCallback = function(obj, ndx, cursor) {
-        var depth = this.__ajDepth.copy();
-        obj = AutoJoin._private.expandDoc(obj, this.__afSchema, depth);
-        return callback.apply(obj, this);
-      };
-      arguments[0] = wrappedCallback;
-      return AutoJoin.__orig.MongoCursorMap.apply(this, arguments);
-    };
+//Mongo.Collection.Cursor.prototype.map =
+//    function mapWithJoin(callback, opt_thisArg) {
+//      if (this.__afSchema) {
+//        var wrappedCallback = function(obj, ndx, cursor) {
+//          if (!this.__ajDepth) {
+//            console.log('WARNING: Depth is undefined.  Defaulting to 0.');
+//          }
+//          var depth = this.__ajDepth || 0;
+//          obj = AutoJoin._private.expandDoc(obj, this.__afSchema, depth);
+//          return callback.apply(obj, this);
+//        };
+//        arguments[0] = wrappedCallback;
+//      }
+//      return AutoJoin.__orig.MongoCursorMap.apply(this, arguments);
+//    };

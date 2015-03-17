@@ -1,4 +1,4 @@
-Tinytest.add('AutoJoin._private.CreateFindOption Tests', function (test) {
+Tinytest.add('AutoJoin - Private - CreateFindOption Tests', function(test) {
   test.equal(AutoJoin._private.createFindOption(), {});
   test.equal(AutoJoin._private.createFindOption(true), {
     autojoin: {
@@ -34,7 +34,7 @@ Tinytest.add('AutoJoin._private.CreateFindOption Tests', function (test) {
   });
 });
 
-Tinytest.add('Basic Test', function (test) {
+Tinytest.add('AutoJoin - Join - Basic Test1', function(test) {
   AutoJoin.prefs.automatic = true;
   AutoJoin.prefs.depth = 1;
 
@@ -43,38 +43,52 @@ Tinytest.add('Basic Test', function (test) {
   var ChildSchema = new SimpleSchema({
     name: {
       type: String,
-      label: "Name"
+      label: 'Name'
     }
   });
   Children.attachSchema(ChildSchema);
-  Children.allow({insert: function(){return true}, update: function(){return true}, remove: function(){return true}});
+  Children.allow(
+      {
+        insert: function() {return true},
+        update: function() {return true},
+        remove: function() {return true}
+      }
+  );
 
 
-  var Parents = new Mongo.Collection("parents");
+  var Parents = new Mongo.Collection('parents');
   var ParentSchema = new SimpleSchema({
     name: {
       type: String,
       label: 'Name'
     },
     child: {
-      type: String,
+      type: [String],
       label: 'Child',
       autojoin: {
-        collection: 'Children', //references the Children global variable
+        collection: Children, //references the Children global variable
         id: '_id' //(optional) the id of the target(i.e. Children) collection
       }
     }
   });
+
   Parents.attachSchema(ParentSchema);
-  Parents.allow({insert: function(){return true}, update: function(){return true}, remove: function(){return true}});
+  Parents.allow(
+      {
+        insert: function() {return true;},
+        update: function() {return true;},
+        remove: function() {return true;}
+      }
+  );
 
   //delete old passes
-  Children.find({}).fetch().forEach(function(o,i,c){
-    Children.remove({_id:o._id});
+  Children.find({}).fetch().forEach(function(o, i, c) {
+    Children.remove({_id: o._id});
   });
-  Parents.find({}).fetch().forEach(function(o,i,c){
+
+  Parents.find({}).fetch().forEach(function(o, i, c) {
     Parents.remove({_id: o._id});
-  })
+  });
 
   //create new documents
   var cid = Children.insert({
@@ -82,14 +96,18 @@ Tinytest.add('Basic Test', function (test) {
   });
   Parents.insert({
     name: 'parent',
-    child: cid
+    child: [cid]
   });
 
   //test
-
   var allParents = Parents.find({});
   test.equal(allParents.count(), 1);
-  test.equal(_.omit(allParents.fetch()[0], '_id'), {
+
+  var allParentsValue = allParents.fetch()[0];
+  //these properties will change so we ignore them by removing them
+  AutoJoin.util.deepDelete(allParentsValue, '_id');
+  AutoJoin.util.deepDelete(allParentsValue, 'child.0._id');
+  test.equal(allParentsValue, {
     name: 'parent',
     child: {
       name: 'child'

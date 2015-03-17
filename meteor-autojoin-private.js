@@ -47,16 +47,30 @@ _private.expandProp = function expandProp(prop, propValue, propSchema, depth) {
     return propValue;
   }
   if (!propSchema || !propSchema[_private.AUTOJOIN_CONTAINER]) {
-    return prop;
+    return propValue;
   }
 
   var collection = propSchema[_private.AUTOJOIN_CONTAINER].collection;
-  var id_key = propSchema[_private.AUTOJOIN_CONTAINER][_private.ID_PROPERTY] ?
-    propSchema[_private.AUTOJOIN_CONTAINER][_private.ID_PROPERTY] : '_id';
-  var query = {};
-  query[id_key] = propValue;
+  var id_key = propSchema[_private.AUTOJOIN_CONTAINER][_private.ID_PROPERTY] ||
+      '_id';
   //expand the value
-  return window[collection].findOne(query, {autojoin: {depth: depth - 1}});
+  var returnVal;
+  if (propSchema.type() instanceof Array) {
+    returnVal = [];
+    for (var i = 0; i < propValue.length; i++) {
+      var query = {};
+      query[id_key] = propValue[i];
+      returnVal.push(collection.findOne(query,
+          {autojoin: {depth: depth - 1}}));
+    }
+  } else {
+    var query = {};
+    query[id_key] = propValue;
+    //single value assumed
+    returnVal = collection.findOne(query,
+        {autojoin: {depth: depth - 1}});
+  }
+  return returnVal;
 };
 
 

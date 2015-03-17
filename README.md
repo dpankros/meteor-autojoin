@@ -88,6 +88,7 @@ A query for the same parent would return
   }
 }
 ```
+Arrays work in the same way, just define an array property in your SimpleSchema.
 
 ## Advanced Usage
 AutoJoin has basic configuration capabilities.  These are done be setting
@@ -147,7 +148,7 @@ ParentSchema = new SimpleSchema({
     type: String,
     label: 'Child',
     autojoin: {
-      collection: 'Children'
+      collection: Children
     }
   }
 });
@@ -197,8 +198,6 @@ There are a few things to note:
   level of joins will be performed, and so on.
   1. The id property is optional and will default to _id if not specified.
   It is included in the basic example for completeness.
-  1. Autojoin does not currently handle arrays so an array of children would
-  not work.
   1. Specifying a depth of -1 or any negative number will cause infinite
   expansion, even in the case of infinte loops.  I don't recommend it.
   1.  This was coded in a few hours so many use cases are still omitted, I'm

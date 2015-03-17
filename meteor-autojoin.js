@@ -39,3 +39,10 @@ AutoJoin._private = _private;
  */
 AutoJoin.__orig = __orig;
 
+
+/**
+ * Utilities for setting ang getting properties beyond the first level
+ * @type {Object}
+ */
+AutoJoin.util = util;
+

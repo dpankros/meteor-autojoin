@@ -18,6 +18,7 @@ Package.onUse(function(api) {
   api.versionsFrom('1.0.3.2');
 
   api.addFiles('meteor-autojoin-prefs.js');
+  api.addFiles('meteor-autojoin-util.js');
   api.addFiles('meteor-autojoin-private.js');
   api.addFiles('meteor-autojoin-mongo.js');
   api.addFiles('meteor-autojoin.js');
@@ -30,6 +31,6 @@ Package.onTest(function(api) {
   api.use('tinytest');
   api.use('aldeed:simple-schema@1.3.0', ['client', 'server']);
   api.use('aldeed:collection2@2.3.2', ['client', 'server']);
-  api.addFiles('meteor-autojoin-tests.js');
   api.use('dpankros:autojoin');
+  api.addFiles('meteor-autojoin-tests.js');
 });
