@@ -45,7 +45,7 @@ ParentSchema = new SimpleSchema({
     type: String,
     label: 'Child',
     autojoin: {
-      collection: 'Children', //references the Children global variable
+      collection: Children, //references the Children global variable
       id: '_id' //(optional) the id of the target(i.e. Children) collection
     }
   }
@@ -129,7 +129,7 @@ ChildSchema = new SimpleSchema({
     type: String,
     label: 'Parent',
     autojoin: {
-      collection: 'Parents'
+      collection: Parents
     }
   }
 });
