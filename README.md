@@ -18,7 +18,7 @@ meteor add dpankros:autojoin
 ## Basic Usage
 AutoJoin exposes a global AutoJoin object that mainly exposes default
 preferences that you may never even have to access.  To use AutoJoin, define
-a SimpleSchema for your data and add an autojoin property object to it.  For
+a Simple-Schema for your data and add an autojoin property object to it.  For
 example:
 
 ```
@@ -88,7 +88,8 @@ A query for the same parent would return
   }
 }
 ```
-Arrays work in the same way, just define an array property in your SimpleSchema.
+Arrays work in the same way, just define an array property in your
+Simple-Schema.
 
 ## Advanced Usage
 AutoJoin has basic configuration capabilities.  These are done be setting
