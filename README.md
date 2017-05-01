@@ -1,3 +1,7 @@
+WARNING: DEPRECATED
+==========
+I will not be maintaining this package moving forward.  If you use it and want to take it over, please let me know.  If nobody steps up to take over the project, I reserve the right to delete it after 1 Aug 2017.
+
 AutoJoin
 =============
 
